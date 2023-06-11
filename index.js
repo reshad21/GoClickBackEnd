@@ -61,13 +61,19 @@ async function run() {
 
         app.get('/product/search', async (req, res) => {
             const searchTerm = req.query.term;
-            console.log(searchTerm);
-            const searchData = await productCollection.find({ name: { $regex: searchTerm, $options: 'i' } });
-            // res.json(searchData);
-            // const data = res.json(searchData);
-            res.send(searchData);
-
-        })
+            const regex = new RegExp(searchTerm, 'i');
+            const searchData = await productCollection
+            .find({
+                $or: [
+                  { orderid: regex },
+                  { from: regex },
+                  { to: regex },
+                ]
+              })
+            .toArray();
+            console.log(searchData);
+            res.json(searchData);
+        });
 
 
 
